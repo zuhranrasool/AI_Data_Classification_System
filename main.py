@@ -1,5 +1,6 @@
 from preprocessing.data_loader import load_dataset
 from preprocessing.data_cleaning import clean_dataset
+from preprocessing.feature_engineering import feature_engineering
 
 
 def main():
@@ -8,10 +9,17 @@ def main():
 
     if dataset is not None:
 
+        # Step 7
         dataset = clean_dataset(dataset)
 
-        print("\nFirst Five Records")
-        print(dataset.head())
+        # Step 8
+        X, y, label_encoder = feature_engineering(dataset)
+
+        print("\nFirst Five Feature Rows")
+        print(X.head())
+
+        print("\nFirst Five Target Values")
+        print(y.head())
 
 
 if __name__ == "__main__":
