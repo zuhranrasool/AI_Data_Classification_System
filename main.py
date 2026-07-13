@@ -1,4 +1,5 @@
 from preprocessing.data_loader import load_dataset
+from preprocessing.data_cleaning import clean_dataset
 
 
 def main():
@@ -7,25 +8,10 @@ def main():
 
     if dataset is not None:
 
+        dataset = clean_dataset(dataset)
+
         print("\nFirst Five Records")
-        print("-" * 60)
         print(dataset.head())
-
-        print("\nDataset Shape")
-        print("-" * 60)
-        print(dataset.shape)
-
-        print("\nColumn Names")
-        print("-" * 60)
-        print(dataset.columns.tolist())
-
-        print("\nDataset Information")
-        print("-" * 60)
-        dataset.info()
-
-        print("\nMissing Values")
-        print("-" * 60)
-        print(dataset.isnull().sum())
 
 
 if __name__ == "__main__":
