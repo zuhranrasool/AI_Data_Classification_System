@@ -2,7 +2,9 @@ from preprocessing.data_loader import load_dataset
 from preprocessing.data_cleaning import clean_dataset
 from preprocessing.feature_engineering import feature_engineering
 from preprocessing.split_dataset import split_dataset
+
 from algorithms.decision_tree import train_decision_tree
+from algorithms.logistic_regression import train_logistic_regression
 
 
 def main():
@@ -22,15 +24,23 @@ def main():
         X_train, X_test, y_train, y_test = split_dataset(X, y)
 
         # Step 10
-        model, y_pred, accuracy = train_decision_tree(
+        dt_model, dt_predictions, dt_accuracy = train_decision_tree(
             X_train,
             X_test,
             y_train,
             y_test
         )
 
-        print("\nFirst 10 Predictions")
-        print(y_pred[:10])
+        # Step 11
+        lr_model, lr_predictions, lr_accuracy = train_logistic_regression(
+            X_train,
+            X_test,
+            y_train,
+            y_test
+        )
+
+        print("\nDecision Tree Accuracy:", f"{dt_accuracy:.2%}")
+        print("Logistic Regression Accuracy:", f"{lr_accuracy:.2%}")
 
 
 if __name__ == "__main__":
