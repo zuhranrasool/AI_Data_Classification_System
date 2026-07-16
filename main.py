@@ -6,6 +6,7 @@ from preprocessing.split_dataset import split_dataset
 from algorithms.decision_tree import train_decision_tree
 from algorithms.logistic_regression import train_logistic_regression
 from algorithms.knn_classifier import train_knn_classifier
+from algorithms.random_forest import train_random_forest
 
 
 def main():
@@ -48,6 +49,14 @@ def main():
             y_test
         )
 
+        # Step 13
+        rf_model, rf_predictions, rf_accuracy = train_random_forest(
+            X_train,
+            X_test,
+            y_train,
+            y_test
+        )
+
         print("\n" + "=" * 60)
         print("MODEL ACCURACY SUMMARY")
         print("=" * 60)
@@ -55,6 +64,7 @@ def main():
         print(f"Decision Tree        : {dt_accuracy:.2%}")
         print(f"Logistic Regression : {lr_accuracy:.2%}")
         print(f"KNN                 : {knn_accuracy:.2%}")
+        print(f"Random Forest       : {rf_accuracy:.2%}")
 
 
 if __name__ == "__main__":
