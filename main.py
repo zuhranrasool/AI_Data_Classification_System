@@ -17,6 +17,7 @@ from models.save_model import save_model
 from models.predict import predict_students
 
 from visualization.plots import generate_basic_plots
+from visualization.graphs import generate_advanced_graphs
 
 
 def main():
@@ -48,28 +49,40 @@ def main():
     # STEP 10 - DECISION TREE
     # ==========================================================
     dt_model, dt_predictions, dt_accuracy = train_decision_tree(
-        X_train, X_test, y_train, y_test
+        X_train,
+        X_test,
+        y_train,
+        y_test
     )
 
     # ==========================================================
     # STEP 11 - LOGISTIC REGRESSION
     # ==========================================================
     lr_model, lr_predictions, lr_accuracy = train_logistic_regression(
-        X_train, X_test, y_train, y_test
+        X_train,
+        X_test,
+        y_train,
+        y_test
     )
 
     # ==========================================================
     # STEP 12 - KNN
     # ==========================================================
     knn_model, knn_predictions, knn_accuracy = train_knn_classifier(
-        X_train, X_test, y_train, y_test
+        X_train,
+        X_test,
+        y_train,
+        y_test
     )
 
     # ==========================================================
     # STEP 13 - RANDOM FOREST
     # ==========================================================
     rf_model, rf_predictions, rf_accuracy = train_random_forest(
-        X_train, X_test, y_train, y_test
+        X_train,
+        X_test,
+        y_train,
+        y_test
     )
 
     # ==========================================================
@@ -83,7 +96,7 @@ def main():
     )
 
     # ==========================================================
-    # STEP 15 - BEST MODEL SELECTION & SAVE
+    # STEP 15 - BEST MODEL SELECTION
     # ==========================================================
     best_model = lr_model
 
@@ -93,6 +106,9 @@ def main():
     print("Selected Model : Logistic Regression")
     print(f"Accuracy       : {lr_accuracy:.2%}")
 
+    # ==========================================================
+    # STEP 15 - SAVE MODEL
+    # ==========================================================
     save_model(best_model)
 
     # ==========================================================
@@ -132,6 +148,11 @@ def main():
     # STEP 21 - BASIC VISUALIZATIONS
     # ==========================================================
     generate_basic_plots(dataset)
+
+    # ==========================================================
+    # STEP 22 - ADVANCED GRAPHS
+    # ==========================================================
+    generate_advanced_graphs(dataset)
 
 
 if __name__ == "__main__":
