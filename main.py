@@ -9,6 +9,7 @@ from algorithms.knn_classifier import train_knn_classifier
 from algorithms.random_forest import train_random_forest
 
 from models.save_model import save_model
+from models.predict import predict_students
 
 
 def main():
@@ -76,7 +77,7 @@ def main():
         )
 
         # ============================================================
-        # Step 14 - Model Comparison
+        # Step 14 - Compare Models
         # ============================================================
         print("\n" + "=" * 60)
         print("MODEL ACCURACY SUMMARY")
@@ -116,6 +117,11 @@ def main():
 
         elif best_model == "Random Forest":
             save_model(rf_model)
+
+        # ============================================================
+        # Step 16 - Prediction Module
+        # ============================================================
+        predict_students()
 
 
 if __name__ == "__main__":
