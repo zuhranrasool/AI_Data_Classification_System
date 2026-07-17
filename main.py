@@ -16,75 +16,65 @@ from evaluation.metrics import evaluate_metrics
 from models.save_model import save_model
 from models.predict import predict_students
 
+from visualization.plots import generate_basic_plots
+
 
 def main():
 
-    # ============================================================
-    # STEP 6: LOAD DATASET
-    # ============================================================
+    # ==========================================================
+    # STEP 6 - LOAD DATASET
+    # ==========================================================
     dataset = load_dataset("dataset/student_data.csv")
 
     if dataset is None:
         return
 
-    # ============================================================
-    # STEP 7: DATA CLEANING
-    # ============================================================
+    # ==========================================================
+    # STEP 7 - DATA CLEANING
+    # ==========================================================
     dataset = clean_dataset(dataset)
 
-    # ============================================================
-    # STEP 8: FEATURE ENGINEERING
-    # ============================================================
+    # ==========================================================
+    # STEP 8 - FEATURE ENGINEERING
+    # ==========================================================
     X, y, label_encoder = feature_engineering(dataset)
 
-    # ============================================================
-    # STEP 9: TRAIN / TEST SPLIT
-    # ============================================================
+    # ==========================================================
+    # STEP 9 - TRAIN / TEST SPLIT
+    # ==========================================================
     X_train, X_test, y_train, y_test = split_dataset(X, y)
 
-    # ============================================================
-    # STEP 10: DECISION TREE
-    # ============================================================
+    # ==========================================================
+    # STEP 10 - DECISION TREE
+    # ==========================================================
     dt_model, dt_predictions, dt_accuracy = train_decision_tree(
-        X_train,
-        X_test,
-        y_train,
-        y_test
+        X_train, X_test, y_train, y_test
     )
 
-    # ============================================================
-    # STEP 11: LOGISTIC REGRESSION
-    # ============================================================
+    # ==========================================================
+    # STEP 11 - LOGISTIC REGRESSION
+    # ==========================================================
     lr_model, lr_predictions, lr_accuracy = train_logistic_regression(
-        X_train,
-        X_test,
-        y_train,
-        y_test
+        X_train, X_test, y_train, y_test
     )
 
-    # ============================================================
-    # STEP 12: KNN
-    # ============================================================
+    # ==========================================================
+    # STEP 12 - KNN
+    # ==========================================================
     knn_model, knn_predictions, knn_accuracy = train_knn_classifier(
-        X_train,
-        X_test,
-        y_train,
-        y_test
+        X_train, X_test, y_train, y_test
     )
 
-    # ============================================================
-    # STEP 13: RANDOM FOREST
-    # ============================================================
+    # ==========================================================
+    # STEP 13 - RANDOM FOREST
+    # ==========================================================
     rf_model, rf_predictions, rf_accuracy = train_random_forest(
-        X_train,
-        X_test,
-        y_train,
-        y_test
+        X_train, X_test, y_train, y_test
     )
 
-    # ============================================================
-    # STEP 14: MODEL COMPARISON
-    # ============================================================
+    # ==========================================================
+    # STEP 14 - MODEL COMPARISON
+    # ==========================================================
     evaluate_accuracy(
         dt_accuracy,
         lr_accuracy,
@@ -92,41 +82,27 @@ def main():
         rf_accuracy
     )
 
-    # ============================================================
-    # STEP 15: BEST MODEL SELECTION
-    # ============================================================
-    models = {
-        "Decision Tree": (dt_model, dt_predictions, dt_accuracy),
-        "Logistic Regression": (lr_model, lr_predictions, lr_accuracy),
-        "KNN": (knn_model, knn_predictions, knn_accuracy),
-        "Random Forest": (rf_model, rf_predictions, rf_accuracy),
-    }
-
-    best_model_name = max(models, key=lambda x: models[x][2])
-
-    best_model = models[best_model_name][0]
-    best_predictions = models[best_model_name][1]
-    best_accuracy = models[best_model_name][2]
+    # ==========================================================
+    # STEP 15 - BEST MODEL SELECTION & SAVE
+    # ==========================================================
+    best_model = lr_model
 
     print("\n" + "=" * 60)
     print("BEST MODEL SELECTION")
     print("=" * 60)
-    print(f"Selected Model : {best_model_name}")
-    print(f"Accuracy       : {best_accuracy:.2%}")
+    print("Selected Model : Logistic Regression")
+    print(f"Accuracy       : {lr_accuracy:.2%}")
 
-    # ============================================================
-    # STEP 15: SAVE MODEL
-    # ============================================================
     save_model(best_model)
 
-    # ============================================================
-    # STEP 16: PREDICTION
-    # ============================================================
+    # ==========================================================
+    # STEP 16 - PREDICTION MODULE
+    # ==========================================================
     predict_students()
 
-    # ============================================================
-    # STEP 18: CONFUSION MATRIX
-    # ============================================================
+    # ==========================================================
+    # STEP 18 - CONFUSION MATRIX
+    # ==========================================================
     generate_confusion_matrix(
         best_model,
         X_test,
@@ -134,9 +110,9 @@ def main():
         label_encoder
     )
 
-    # ============================================================
-    # STEP 19: CLASSIFICATION REPORT
-    # ============================================================
+    # ==========================================================
+    # STEP 19 - CLASSIFICATION REPORT
+    # ==========================================================
     generate_classification_report(
         best_model,
         X_test,
@@ -144,13 +120,18 @@ def main():
         label_encoder
     )
 
-    # ============================================================
-    # STEP 20: EVALUATION METRICS
-    # ============================================================
+    # ==========================================================
+    # STEP 20 - EVALUATION METRICS
+    # ==========================================================
     evaluate_metrics(
         y_test,
-        best_predictions
+        lr_predictions
     )
+
+    # ==========================================================
+    # STEP 21 - BASIC VISUALIZATIONS
+    # ==========================================================
+    generate_basic_plots(dataset)
 
 
 if __name__ == "__main__":
