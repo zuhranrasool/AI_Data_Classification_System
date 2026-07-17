@@ -11,6 +11,7 @@ from algorithms.random_forest import train_random_forest
 from evaluation.accuracy import evaluate_accuracy
 from evaluation.confusion_matrix import generate_confusion_matrix
 from evaluation.classification_report import generate_classification_report
+from evaluation.metrics import evaluate_metrics
 
 from models.save_model import save_model
 from models.predict import predict_students
@@ -19,136 +20,137 @@ from models.predict import predict_students
 def main():
 
     # ============================================================
-    # Step 6 - Load Dataset
+    # STEP 6: LOAD DATASET
     # ============================================================
     dataset = load_dataset("dataset/student_data.csv")
 
-    if dataset is not None:
+    if dataset is None:
+        return
 
-        # ============================================================
-        # Step 7 - Data Cleaning
-        # ============================================================
-        dataset = clean_dataset(dataset)
+    # ============================================================
+    # STEP 7: DATA CLEANING
+    # ============================================================
+    dataset = clean_dataset(dataset)
 
-        # ============================================================
-        # Step 8 - Feature Engineering
-        # ============================================================
-        X, y, label_encoder = feature_engineering(dataset)
+    # ============================================================
+    # STEP 8: FEATURE ENGINEERING
+    # ============================================================
+    X, y, label_encoder = feature_engineering(dataset)
 
-        # ============================================================
-        # Step 9 - Train/Test Split
-        # ============================================================
-        X_train, X_test, y_train, y_test = split_dataset(X, y)
+    # ============================================================
+    # STEP 9: TRAIN / TEST SPLIT
+    # ============================================================
+    X_train, X_test, y_train, y_test = split_dataset(X, y)
 
-        # ============================================================
-        # Step 10 - Decision Tree
-        # ============================================================
-        dt_model, dt_predictions, dt_accuracy = train_decision_tree(
-            X_train,
-            X_test,
-            y_train,
-            y_test
-        )
+    # ============================================================
+    # STEP 10: DECISION TREE
+    # ============================================================
+    dt_model, dt_predictions, dt_accuracy = train_decision_tree(
+        X_train,
+        X_test,
+        y_train,
+        y_test
+    )
 
-        # ============================================================
-        # Step 11 - Logistic Regression
-        # ============================================================
-        lr_model, lr_predictions, lr_accuracy = train_logistic_regression(
-            X_train,
-            X_test,
-            y_train,
-            y_test
-        )
+    # ============================================================
+    # STEP 11: LOGISTIC REGRESSION
+    # ============================================================
+    lr_model, lr_predictions, lr_accuracy = train_logistic_regression(
+        X_train,
+        X_test,
+        y_train,
+        y_test
+    )
 
-        # ============================================================
-        # Step 12 - K-Nearest Neighbors
-        # ============================================================
-        knn_model, knn_predictions, knn_accuracy = train_knn_classifier(
-            X_train,
-            X_test,
-            y_train,
-            y_test
-        )
+    # ============================================================
+    # STEP 12: KNN
+    # ============================================================
+    knn_model, knn_predictions, knn_accuracy = train_knn_classifier(
+        X_train,
+        X_test,
+        y_train,
+        y_test
+    )
 
-        # ============================================================
-        # Step 13 - Random Forest
-        # ============================================================
-        rf_model, rf_predictions, rf_accuracy = train_random_forest(
-            X_train,
-            X_test,
-            y_train,
-            y_test
-        )
+    # ============================================================
+    # STEP 13: RANDOM FOREST
+    # ============================================================
+    rf_model, rf_predictions, rf_accuracy = train_random_forest(
+        X_train,
+        X_test,
+        y_train,
+        y_test
+    )
 
-        # ============================================================
-        # Step 17 - Accuracy Evaluation
-        # ============================================================
-        evaluate_accuracy(
-            dt_accuracy,
-            lr_accuracy,
-            knn_accuracy,
-            rf_accuracy
-        )
+    # ============================================================
+    # STEP 14: MODEL COMPARISON
+    # ============================================================
+    evaluate_accuracy(
+        dt_accuracy,
+        lr_accuracy,
+        knn_accuracy,
+        rf_accuracy
+    )
 
-        # ============================================================
-        # Step 14 - Best Model Selection
-        # ============================================================
-        accuracies = {
-            "Decision Tree": dt_accuracy,
-            "Logistic Regression": lr_accuracy,
-            "KNN": knn_accuracy,
-            "Random Forest": rf_accuracy
-        }
+    # ============================================================
+    # STEP 15: BEST MODEL SELECTION
+    # ============================================================
+    models = {
+        "Decision Tree": (dt_model, dt_predictions, dt_accuracy),
+        "Logistic Regression": (lr_model, lr_predictions, lr_accuracy),
+        "KNN": (knn_model, knn_predictions, knn_accuracy),
+        "Random Forest": (rf_model, rf_predictions, rf_accuracy),
+    }
 
-        best_model = max(accuracies, key=accuracies.get)
+    best_model_name = max(models, key=lambda x: models[x][2])
 
-        print("\n" + "=" * 60)
-        print("BEST MODEL SELECTION")
-        print("=" * 60)
-        print(f"Selected Model : {best_model}")
-        print(f"Accuracy       : {accuracies[best_model]:.2%}")
+    best_model = models[best_model_name][0]
+    best_predictions = models[best_model_name][1]
+    best_accuracy = models[best_model_name][2]
 
-        # ============================================================
-        # Step 15 - Save Best Model
-        # ============================================================
-        if best_model == "Decision Tree":
-            best_model_object = dt_model
+    print("\n" + "=" * 60)
+    print("BEST MODEL SELECTION")
+    print("=" * 60)
+    print(f"Selected Model : {best_model_name}")
+    print(f"Accuracy       : {best_accuracy:.2%}")
 
-        elif best_model == "Logistic Regression":
-            best_model_object = lr_model
+    # ============================================================
+    # STEP 15: SAVE MODEL
+    # ============================================================
+    save_model(best_model)
 
-        elif best_model == "KNN":
-            best_model_object = knn_model
+    # ============================================================
+    # STEP 16: PREDICTION
+    # ============================================================
+    predict_students()
 
-        else:
-            best_model_object = rf_model
+    # ============================================================
+    # STEP 18: CONFUSION MATRIX
+    # ============================================================
+    generate_confusion_matrix(
+        best_model,
+        X_test,
+        y_test,
+        label_encoder
+    )
 
-        save_model(best_model_object)
+    # ============================================================
+    # STEP 19: CLASSIFICATION REPORT
+    # ============================================================
+    generate_classification_report(
+        best_model,
+        X_test,
+        y_test,
+        label_encoder
+    )
 
-        # ============================================================
-        # Step 16 - Prediction Module
-        # ============================================================
-        predict_students()
-
-        # ============================================================
-        # Step 18 - Confusion Matrix
-        # ============================================================
-        generate_confusion_matrix(
-            best_model_object,
-            X_test,
-            y_test,
-            label_encoder
-        )
-
-        # ============================================================
-        # Step 19 - Classification Report
-        # ============================================================
-        generate_classification_report(
-            best_model_object,
-            X_test,
-            y_test,
-            label_encoder
-        )
+    # ============================================================
+    # STEP 20: EVALUATION METRICS
+    # ============================================================
+    evaluate_metrics(
+        y_test,
+        best_predictions
+    )
 
 
 if __name__ == "__main__":
