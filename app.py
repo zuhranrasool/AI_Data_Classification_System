@@ -146,8 +146,83 @@ elif page == "📊 Dataset":
     st.success("Dataset loaded successfully.")
 
 elif page == "🤖 Model Training":
-    st.header("Model Training")
-    st.write("Coming in Step 26...")
+
+    st.title("🤖 Model Training Dashboard")
+
+    st.markdown("---")
+
+    from preprocessing.data_cleaning import clean_dataset
+    from preprocessing.feature_engineering import feature_engineering
+    from preprocessing.split_dataset import split_dataset
+
+    from algorithms.decision_tree import train_decision_tree
+    from algorithms.logistic_regression import train_logistic_regression
+    from algorithms.knn_classifier import train_knn_classifier
+    from algorithms.random_forest import train_random_forest
+
+    import pandas as pd
+
+    # Load dataset
+    dataset = pd.read_csv("dataset/student_data.csv")
+
+    # Preprocess
+    dataset = clean_dataset(dataset)
+
+    X, y, label_encoder = feature_engineering(dataset)
+
+    X_train, X_test, y_train, y_test = split_dataset(X, y)
+
+    # Train models
+    dt_model, dt_pred, dt_acc = train_decision_tree(
+        X_train, X_test, y_train, y_test
+    )
+
+    lr_model, lr_pred, lr_acc = train_logistic_regression(
+        X_train, X_test, y_train, y_test
+    )
+
+    knn_model, knn_pred, knn_acc = train_knn_classifier(
+        X_train, X_test, y_train, y_test
+    )
+
+    rf_model, rf_pred, rf_acc = train_random_forest(
+        X_train, X_test, y_train, y_test
+    )
+
+    st.subheader("Model Accuracy")
+
+    results = pd.DataFrame({
+        "Model": [
+            "Decision Tree",
+            "Logistic Regression",
+            "K-Nearest Neighbors",
+            "Random Forest"
+        ],
+        "Accuracy": [
+            dt_acc,
+            lr_acc,
+            knn_acc,
+            rf_acc
+        ]
+    })
+
+    results["Accuracy (%)"] = (results["Accuracy"] * 100).round(2)
+
+    st.dataframe(
+        results[["Model", "Accuracy (%)"]],
+        use_container_width=True
+    )
+
+    st.markdown("---")
+
+    best_model = results.loc[
+        results["Accuracy"].idxmax()
+    ]
+
+    st.success(
+        f"🏆 Best Model: {best_model['Model']} "
+        f"({best_model['Accuracy (%)']:.2f}%)"
+    )
 
 elif page == "🔮 Prediction":
     st.header("Prediction")
