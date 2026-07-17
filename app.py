@@ -96,8 +96,54 @@ results through professional charts.
 # PLACEHOLDERS FOR UPCOMING STEPS
 # ---------------------------------------------------------
 elif page == "📊 Dataset":
-    st.header("Dataset Page")
-    st.write("Coming in Step 25...")
+
+    st.title("📊 Dataset Explorer")
+
+    st.markdown("---")
+
+    import pandas as pd
+
+    # Load dataset
+    dataset = pd.read_csv("dataset/student_data.csv")
+
+    st.subheader("Dataset Preview")
+
+    st.dataframe(dataset)
+
+    st.markdown("---")
+
+    st.subheader("Dataset Information")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("Total Rows", dataset.shape[0])
+
+    with col2:
+        st.metric("Total Columns", dataset.shape[1])
+
+    st.markdown("---")
+
+    st.subheader("Dataset Shape")
+
+    st.write(f"Rows : {dataset.shape[0]}")
+    st.write(f"Columns : {dataset.shape[1]}")
+
+    st.markdown("---")
+
+    st.subheader("Column Names")
+
+    st.write(list(dataset.columns))
+
+    st.markdown("---")
+
+    st.subheader("Statistical Summary")
+
+    st.dataframe(dataset.describe())
+
+    st.markdown("---")
+
+    st.success("Dataset loaded successfully.")
 
 elif page == "🤖 Model Training":
     st.header("Model Training")
