@@ -10,6 +10,7 @@ from algorithms.random_forest import train_random_forest
 
 from evaluation.accuracy import evaluate_accuracy
 from evaluation.confusion_matrix import generate_confusion_matrix
+from evaluation.classification_report import generate_classification_report
 
 from models.save_model import save_model
 from models.predict import predict_students
@@ -60,7 +61,7 @@ def main():
         )
 
         # ============================================================
-        # Step 12 - KNN
+        # Step 12 - K-Nearest Neighbors
         # ============================================================
         knn_model, knn_predictions, knn_accuracy = train_knn_classifier(
             X_train,
@@ -101,24 +102,28 @@ def main():
 
         best_model = max(accuracies, key=accuracies.get)
 
+        print("\n" + "=" * 60)
+        print("BEST MODEL SELECTION")
+        print("=" * 60)
+        print(f"Selected Model : {best_model}")
+        print(f"Accuracy       : {accuracies[best_model]:.2%}")
+
         # ============================================================
         # Step 15 - Save Best Model
         # ============================================================
         if best_model == "Decision Tree":
             best_model_object = dt_model
-            save_model(dt_model)
 
         elif best_model == "Logistic Regression":
             best_model_object = lr_model
-            save_model(lr_model)
 
         elif best_model == "KNN":
             best_model_object = knn_model
-            save_model(knn_model)
 
         else:
             best_model_object = rf_model
-            save_model(rf_model)
+
+        save_model(best_model_object)
 
         # ============================================================
         # Step 16 - Prediction Module
@@ -129,6 +134,16 @@ def main():
         # Step 18 - Confusion Matrix
         # ============================================================
         generate_confusion_matrix(
+            best_model_object,
+            X_test,
+            y_test,
+            label_encoder
+        )
+
+        # ============================================================
+        # Step 19 - Classification Report
+        # ============================================================
+        generate_classification_report(
             best_model_object,
             X_test,
             y_test,
