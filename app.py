@@ -294,9 +294,53 @@ elif page == "📈 Evaluation":
         st.warning("Classification report not found.")
 
 # ---------------------------------------------------------
-# VISUALIZATION PAGE (Step 29 Placeholder)
+# VISUALIZATION PAGE (Step 29 - Visualization Dashboard)
 # ---------------------------------------------------------
 elif page == "📉 Visualization":
+
     st.title("📉 Visualization Dashboard")
     st.markdown("---")
-    st.info("Placeholder for Step 29: Displaying charts and analytical performance metrics.")
+
+    # Create tabs for better organization
+    tab1, tab2 = st.columns(2)
+    
+    st.subheader("📊 Model Performance Comparison")
+    
+    # Path to the accuracy comparison graph saved in Phase 6 (Step 23)
+    accuracy_graph_path = "output/accuracy_graph.png"
+    
+    if os.path.exists(accuracy_graph_path):
+        st.image(accuracy_graph_path, caption="Algorithm Accuracy Comparison", use_container_width=True)
+    else:
+        st.warning("⚠️ Accuracy comparison graph not found in `output/accuracy_graph.png`. Please run charts.py first.")
+
+    st.markdown("---")
+    st.subheader("💡 Dataset Insights & Distributions")
+
+    # Dynamic generation or loading of distribution plots
+    # If your graphs.py / plots.py saves them, load them here:
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("### Study Hours vs Final Marks")
+        # Placeholder example for rendering standard dataset insights if available
+        try:
+            dataset = pd.read_csv("dataset/student_data.csv")
+            import matplotlib.pyplot as plt
+            import seaborn as sns
+            
+            fig, ax = plt.subplots()
+            sns.scatterplot(data=dataset, x="Study_Hours", y="Final", hue="Performance", ax=ax)
+            st.pyplot(fig)
+        except Exception as e:
+            st.info("Load student_data.csv to display real-time scatter charts.")
+
+    with col2:
+        st.markdown("### Performance Class Distribution")
+        try:
+            fig, ax = plt.subplots()
+            dataset["Performance"].value_counts().plot(kind="pie", autopct="%1.1f%%", ax=ax, startangle=90)
+            ax.set_ylabel("")
+            st.pyplot(fig)
+        except Exception as e:
+            st.info("Load student_data.csv to display real-time pie charts.")
