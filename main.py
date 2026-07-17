@@ -8,24 +8,36 @@ from algorithms.logistic_regression import train_logistic_regression
 from algorithms.knn_classifier import train_knn_classifier
 from algorithms.random_forest import train_random_forest
 
+from models.save_model import save_model
+
 
 def main():
 
+    # ============================================================
     # Step 6 - Load Dataset
+    # ============================================================
     dataset = load_dataset("dataset/student_data.csv")
 
     if dataset is not None:
 
+        # ============================================================
         # Step 7 - Data Cleaning
+        # ============================================================
         dataset = clean_dataset(dataset)
 
+        # ============================================================
         # Step 8 - Feature Engineering
+        # ============================================================
         X, y, label_encoder = feature_engineering(dataset)
 
+        # ============================================================
         # Step 9 - Train/Test Split
+        # ============================================================
         X_train, X_test, y_train, y_test = split_dataset(X, y)
 
+        # ============================================================
         # Step 10 - Decision Tree
+        # ============================================================
         dt_model, dt_predictions, dt_accuracy = train_decision_tree(
             X_train,
             X_test,
@@ -33,7 +45,9 @@ def main():
             y_test
         )
 
+        # ============================================================
         # Step 11 - Logistic Regression
+        # ============================================================
         lr_model, lr_predictions, lr_accuracy = train_logistic_regression(
             X_train,
             X_test,
@@ -41,7 +55,9 @@ def main():
             y_test
         )
 
+        # ============================================================
         # Step 12 - KNN
+        # ============================================================
         knn_model, knn_predictions, knn_accuracy = train_knn_classifier(
             X_train,
             X_test,
@@ -49,7 +65,9 @@ def main():
             y_test
         )
 
+        # ============================================================
         # Step 13 - Random Forest
+        # ============================================================
         rf_model, rf_predictions, rf_accuracy = train_random_forest(
             X_train,
             X_test,
@@ -57,7 +75,9 @@ def main():
             y_test
         )
 
-        # Step 14 - Compare Models
+        # ============================================================
+        # Step 14 - Model Comparison
+        # ============================================================
         print("\n" + "=" * 60)
         print("MODEL ACCURACY SUMMARY")
         print("=" * 60)
@@ -81,6 +101,21 @@ def main():
         print("=" * 60)
         print(f"Selected Model : {best_model}")
         print(f"Accuracy       : {accuracies[best_model]:.2%}")
+
+        # ============================================================
+        # Step 15 - Save Best Model
+        # ============================================================
+        if best_model == "Decision Tree":
+            save_model(dt_model)
+
+        elif best_model == "Logistic Regression":
+            save_model(lr_model)
+
+        elif best_model == "KNN":
+            save_model(knn_model)
+
+        elif best_model == "Random Forest":
+            save_model(rf_model)
 
 
 if __name__ == "__main__":
