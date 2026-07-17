@@ -8,6 +8,8 @@ from algorithms.logistic_regression import train_logistic_regression
 from algorithms.knn_classifier import train_knn_classifier
 from algorithms.random_forest import train_random_forest
 
+from evaluation.accuracy import evaluate_accuracy
+
 from models.save_model import save_model
 from models.predict import predict_students
 
@@ -77,17 +79,16 @@ def main():
         )
 
         # ============================================================
-        # Step 14 - Compare Models
+        # Step 17 - Accuracy Evaluation
         # ============================================================
-        print("\n" + "=" * 60)
-        print("MODEL ACCURACY SUMMARY")
-        print("=" * 60)
+        evaluate_accuracy(
+            dt_accuracy,
+            lr_accuracy,
+            knn_accuracy,
+            rf_accuracy
+        )
 
-        print(f"Decision Tree        : {dt_accuracy:.2%}")
-        print(f"Logistic Regression  : {lr_accuracy:.2%}")
-        print(f"KNN                  : {knn_accuracy:.2%}")
-        print(f"Random Forest        : {rf_accuracy:.2%}")
-
+        # Determine the best model
         accuracies = {
             "Decision Tree": dt_accuracy,
             "Logistic Regression": lr_accuracy,
@@ -96,12 +97,6 @@ def main():
         }
 
         best_model = max(accuracies, key=accuracies.get)
-
-        print("\n" + "=" * 60)
-        print("BEST MODEL SELECTION")
-        print("=" * 60)
-        print(f"Selected Model : {best_model}")
-        print(f"Accuracy       : {accuracies[best_model]:.2%}")
 
         # ============================================================
         # Step 15 - Save Best Model
