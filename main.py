@@ -18,6 +18,7 @@ from models.predict import predict_students
 
 from visualization.plots import generate_basic_plots
 from visualization.graphs import generate_advanced_graphs
+from visualization.charts import generate_performance_charts
 
 
 def main():
@@ -153,6 +154,18 @@ def main():
     # STEP 22 - ADVANCED GRAPHS
     # ==========================================================
     generate_advanced_graphs(dataset)
+
+    # ==========================================================
+    # STEP 23 - PERFORMANCE CHARTS
+    # ==========================================================
+    accuracies = {
+        "Decision Tree": dt_accuracy,
+        "Logistic Regression": lr_accuracy,
+        "KNN": knn_accuracy,
+        "Random Forest": rf_accuracy,
+    }
+
+    generate_performance_charts(accuracies)
 
 
 if __name__ == "__main__":
