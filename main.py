@@ -9,6 +9,7 @@ from algorithms.knn_classifier import train_knn_classifier
 from algorithms.random_forest import train_random_forest
 
 from evaluation.accuracy import evaluate_accuracy
+from evaluation.confusion_matrix import generate_confusion_matrix
 
 from models.save_model import save_model
 from models.predict import predict_students
@@ -88,7 +89,9 @@ def main():
             rf_accuracy
         )
 
-        # Determine the best model
+        # ============================================================
+        # Step 14 - Best Model Selection
+        # ============================================================
         accuracies = {
             "Decision Tree": dt_accuracy,
             "Logistic Regression": lr_accuracy,
@@ -102,21 +105,35 @@ def main():
         # Step 15 - Save Best Model
         # ============================================================
         if best_model == "Decision Tree":
+            best_model_object = dt_model
             save_model(dt_model)
 
         elif best_model == "Logistic Regression":
+            best_model_object = lr_model
             save_model(lr_model)
 
         elif best_model == "KNN":
+            best_model_object = knn_model
             save_model(knn_model)
 
-        elif best_model == "Random Forest":
+        else:
+            best_model_object = rf_model
             save_model(rf_model)
 
         # ============================================================
         # Step 16 - Prediction Module
         # ============================================================
         predict_students()
+
+        # ============================================================
+        # Step 18 - Confusion Matrix
+        # ============================================================
+        generate_confusion_matrix(
+            best_model_object,
+            X_test,
+            y_test,
+            label_encoder
+        )
 
 
 if __name__ == "__main__":
