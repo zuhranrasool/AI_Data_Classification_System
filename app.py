@@ -225,8 +225,89 @@ elif page == "🤖 Model Training":
     )
 
 elif page == "🔮 Prediction":
-    st.header("Prediction")
-    st.write("Coming in Step 27...")
+
+    import joblib
+    import pandas as pd
+
+    st.title("🔮 Student Performance Prediction")
+
+    st.markdown("---")
+
+    st.subheader("Enter Student Information")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        study_hours = st.number_input(
+            "Study Hours",
+            min_value=0,
+            max_value=12,
+            value=5
+        )
+
+        attendance = st.number_input(
+            "Attendance (%)",
+            min_value=0,
+            max_value=100,
+            value=80
+        )
+
+        assignment = st.number_input(
+            "Assignment Marks",
+            min_value=0,
+            max_value=100,
+            value=75
+        )
+
+    with col2:
+
+        midterm = st.number_input(
+            "Midterm Marks",
+            min_value=0,
+            max_value=100,
+            value=70
+        )
+
+        final = st.number_input(
+            "Final Marks",
+            min_value=0,
+            max_value=100,
+            value=75
+        )
+
+    st.markdown("---")
+
+    if st.button("Predict Performance"):
+
+        # Load trained model
+        model = joblib.load("output/trained_model.pkl")
+
+        # Create input dataframe
+        input_data = pd.DataFrame({
+            "Study_Hours": [study_hours],
+            "Attendance": [attendance],
+            "Assignment": [assignment],
+            "Midterm": [midterm],
+            "Final": [final]
+        })
+
+        # Prediction
+        prediction = model.predict(input_data)[0]
+
+        label_map = {
+            0: "Average",
+            1: "Excellent",
+            2: "Good",
+            3: "Poor"
+        }
+
+        predicted_label = label_map[prediction]
+
+        st.markdown("---")
+
+        st.success(
+            f"Predicted Student Performance: **{predicted_label}**"
+        )
 
 elif page == "📈 Evaluation":
     st.header("Evaluation")
