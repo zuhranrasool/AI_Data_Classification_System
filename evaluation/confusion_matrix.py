@@ -34,4 +34,4 @@ def generate_confusion_matrix(model, X_test, y_test, label_encoder):
     print("Confusion Matrix saved successfully.")
     print("Location: output/confusion_matrix.png")
 
-    plt.show()
+    plt.close()

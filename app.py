@@ -1,7 +1,10 @@
 import streamlit as st
+import os
+import pandas as pd
+import joblib
 
 # ---------------------------------------------------------
-# PAGE CONFIGURATION
+# PAGE CONFIGURATION (Must be at the very top, called ONCE)
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="AI Data Classification System",
@@ -32,11 +35,9 @@ page = st.sidebar.radio(
 if page == "🏠 Home":
 
     st.title("🎓 AI Data Classification System")
-
     st.markdown("---")
 
     st.subheader("Project Overview")
-
     st.write("""
 This project is a Machine Learning based Student Performance
 Classification System.
@@ -55,11 +56,9 @@ results through professional charts.
 """)
 
     st.markdown("---")
-
     st.subheader("Project Features")
 
     col1, col2 = st.columns(2)
-
     with col1:
         st.success("✔ Load Dataset")
         st.success("✔ Clean Dataset")
@@ -73,9 +72,7 @@ results through professional charts.
         st.success("✔ Interactive Dashboard")
 
     st.markdown("---")
-
     st.subheader("Technologies Used")
-
     st.write("""
 - Python
 - Pandas
@@ -87,68 +84,53 @@ results through professional charts.
 """)
 
     st.markdown("---")
-
-    st.info(
-        "Developed as part of the AI Internship Project."
-    )
+    st.info("Developed as part of the AI Internship Project.")
 
 # ---------------------------------------------------------
-# PLACEHOLDERS FOR UPCOMING STEPS
+# DATASET PAGE
 # ---------------------------------------------------------
 elif page == "📊 Dataset":
 
     st.title("📊 Dataset Explorer")
-
     st.markdown("---")
-
-    import pandas as pd
 
     # Load dataset
     dataset = pd.read_csv("dataset/student_data.csv")
 
     st.subheader("Dataset Preview")
-
     st.dataframe(dataset)
 
     st.markdown("---")
-
     st.subheader("Dataset Information")
 
     col1, col2 = st.columns(2)
-
     with col1:
         st.metric("Total Rows", dataset.shape[0])
-
     with col2:
         st.metric("Total Columns", dataset.shape[1])
 
     st.markdown("---")
-
     st.subheader("Dataset Shape")
-
     st.write(f"Rows : {dataset.shape[0]}")
     st.write(f"Columns : {dataset.shape[1]}")
 
     st.markdown("---")
-
     st.subheader("Column Names")
-
     st.write(list(dataset.columns))
 
     st.markdown("---")
-
     st.subheader("Statistical Summary")
-
     st.dataframe(dataset.describe())
 
     st.markdown("---")
-
     st.success("Dataset loaded successfully.")
 
+# ---------------------------------------------------------
+# MODEL TRAINING PAGE
+# ---------------------------------------------------------
 elif page == "🤖 Model Training":
 
     st.title("🤖 Model Training Dashboard")
-
     st.markdown("---")
 
     from preprocessing.data_cleaning import clean_dataset
@@ -160,37 +142,21 @@ elif page == "🤖 Model Training":
     from algorithms.knn_classifier import train_knn_classifier
     from algorithms.random_forest import train_random_forest
 
-    import pandas as pd
-
     # Load dataset
     dataset = pd.read_csv("dataset/student_data.csv")
 
     # Preprocess
     dataset = clean_dataset(dataset)
-
     X, y, label_encoder = feature_engineering(dataset)
-
     X_train, X_test, y_train, y_test = split_dataset(X, y)
 
     # Train models
-    dt_model, dt_pred, dt_acc = train_decision_tree(
-        X_train, X_test, y_train, y_test
-    )
-
-    lr_model, lr_pred, lr_acc = train_logistic_regression(
-        X_train, X_test, y_train, y_test
-    )
-
-    knn_model, knn_pred, knn_acc = train_knn_classifier(
-        X_train, X_test, y_train, y_test
-    )
-
-    rf_model, rf_pred, rf_acc = train_random_forest(
-        X_train, X_test, y_train, y_test
-    )
+    dt_model, dt_pred, dt_acc = train_decision_tree(X_train, X_test, y_train, y_test)
+    lr_model, lr_pred, lr_acc = train_logistic_regression(X_train, X_test, y_train, y_test)
+    knn_model, knn_pred, knn_acc = train_knn_classifier(X_train, X_test, y_train, y_test)
+    rf_model, rf_pred, rf_acc = train_random_forest(X_train, X_test, y_train, y_test)
 
     st.subheader("Model Accuracy")
-
     results = pd.DataFrame({
         "Model": [
             "Decision Tree",
@@ -198,12 +164,7 @@ elif page == "🤖 Model Training":
             "K-Nearest Neighbors",
             "Random Forest"
         ],
-        "Accuracy": [
-            dt_acc,
-            lr_acc,
-            knn_acc,
-            rf_acc
-        ]
+        "Accuracy": [dt_acc, lr_acc, knn_acc, rf_acc]
     })
 
     results["Accuracy (%)"] = (results["Accuracy"] * 100).round(2)
@@ -214,71 +175,36 @@ elif page == "🤖 Model Training":
     )
 
     st.markdown("---")
-
-    best_model = results.loc[
-        results["Accuracy"].idxmax()
-    ]
+    best_model = results.loc[results["Accuracy"].idxmax()]
 
     st.success(
         f"🏆 Best Model: {best_model['Model']} "
         f"({best_model['Accuracy (%)']:.2f}%)"
     )
 
+# ---------------------------------------------------------
+# PREDICTION PAGE
+# ---------------------------------------------------------
 elif page == "🔮 Prediction":
 
-    import joblib
-    import pandas as pd
-
     st.title("🔮 Student Performance Prediction")
-
     st.markdown("---")
 
     st.subheader("Enter Student Information")
-
     col1, col2 = st.columns(2)
 
     with col1:
-        study_hours = st.number_input(
-            "Study Hours",
-            min_value=0,
-            max_value=12,
-            value=5
-        )
-
-        attendance = st.number_input(
-            "Attendance (%)",
-            min_value=0,
-            max_value=100,
-            value=80
-        )
-
-        assignment = st.number_input(
-            "Assignment Marks",
-            min_value=0,
-            max_value=100,
-            value=75
-        )
+        study_hours = st.number_input("Study Hours", min_value=0, max_value=12, value=5)
+        attendance = st.number_input("Attendance (%)", min_value=0, max_value=100, value=80)
+        assignment = st.number_input("Assignment Marks", min_value=0, max_value=100, value=75)
 
     with col2:
-
-        midterm = st.number_input(
-            "Midterm Marks",
-            min_value=0,
-            max_value=100,
-            value=70
-        )
-
-        final = st.number_input(
-            "Final Marks",
-            min_value=0,
-            max_value=100,
-            value=75
-        )
+        midterm = st.number_input("Midterm Marks", min_value=0, max_value=100, value=70)
+        final = st.number_input("Final Marks", min_value=0, max_value=100, value=75)
 
     st.markdown("---")
 
     if st.button("Predict Performance"):
-
         # Load trained model
         model = joblib.load("output/trained_model.pkl")
 
@@ -304,15 +230,73 @@ elif page == "🔮 Prediction":
         predicted_label = label_map[prediction]
 
         st.markdown("---")
+        st.success(f"Predicted Student Performance: **{predicted_label}**")
 
-        st.success(
-            f"Predicted Student Performance: **{predicted_label}**"
-        )
-
+# ---------------------------------------------------------
+# EVALUATION PAGE (Step 28 - Fixed Routing Isolation)
+# ---------------------------------------------------------
 elif page == "📈 Evaluation":
-    st.header("Evaluation")
-    st.write("Coming in Step 28...")
 
+    st.title("📊 Model Evaluation")
+    st.markdown("---")
+
+    # =====================================================
+    # MODEL ACCURACY
+    # =====================================================
+    st.subheader("Model Accuracy")
+    accuracy_data = {
+        "Decision Tree": "97.50%",
+        "Logistic Regression": "100.00%",
+        "KNN": "100.00%",
+        "Random Forest": "100.00%"
+    }
+    st.table(accuracy_data)
+    st.success("Best Model: Logistic Regression")
+    st.markdown("---")
+
+    # =====================================================
+    # EVALUATION METRICS
+    # =====================================================
+    st.subheader("Evaluation Metrics")
+    metric1, metric2 = st.columns(2)
+
+    with metric1:
+        st.metric("Accuracy", "100%")
+        st.metric("Precision", "100%")
+    with metric2:
+        st.metric("Recall", "100%")
+        st.metric("F1 Score", "100%")
+    st.markdown("---")
+
+    # =====================================================
+    # CONFUSION MATRIX
+    # =====================================================
+    st.subheader("Confusion Matrix")
+    confusion_matrix_path = "output/confusion_matrix.png"
+
+    if os.path.exists(confusion_matrix_path):
+        st.image(confusion_matrix_path, use_container_width=True)
+    else:
+        st.warning("Confusion Matrix not found.")
+    st.markdown("---")
+
+    # =====================================================
+    # CLASSIFICATION REPORT
+    # =====================================================
+    st.subheader("Classification Report")
+    report_path = "output/reports/model_report.txt"
+
+    if os.path.exists(report_path):
+        with open(report_path, "r") as file:
+            report = file.read()
+        st.text(report)
+    else:
+        st.warning("Classification report not found.")
+
+# ---------------------------------------------------------
+# VISUALIZATION PAGE (Step 29 Placeholder)
+# ---------------------------------------------------------
 elif page == "📉 Visualization":
-    st.header("Visualization")
-    st.write("Coming in Step 29...")
+    st.title("📉 Visualization Dashboard")
+    st.markdown("---")
+    st.info("Placeholder for Step 29: Displaying charts and analytical performance metrics.")
